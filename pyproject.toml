@@ -13,6 +13,7 @@ alembic = "^1.13.1"
 asyncpg = "^0.29.0"
 pydantic = "^2.5.3"
 sqlalchemy = "^2.0.25"
+uvicorn = "^0.26.0"
 
 
 [build-system]

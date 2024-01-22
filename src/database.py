@@ -1,23 +1,44 @@
-from typing import Annotated
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, async_scoped_session
 from src.config import settings
 import uuid
 from datetime import datetime
-
+from asyncio import current_task
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from sqlalchemy.orm import DeclarativeBase
 
 
-async_engine = create_async_engine(
-    url=settings.DATABASE_URL_asyncpg,
-    echo=True,
-)
+class AsyncDatabaseManager:
+    async_engine = create_async_engine(
+        url=settings.DATABASE_URL_asyncpg,
+        echo=True,
+    )
+    async_session_factory = async_sessionmaker(
+        bind=async_engine,
+        autoflush=False,
+        autocommit=False,
+        expire_on_commit=False
+    )
+
+    def get_scoped_session(self):
+        session = async_scoped_session(
+            session_factory=self.async_session_factory,
+            scopefunc=current_task,
+        )
+        return session
+
+    async def session_dependency(self):
+        with self.get_scoped_session() as async_session:
+            yield async_session
+            await async_session.remove()
+
+    async def scoped_session_dependency(self):
+        async_session = self.get_scoped_session()
+        yield async_session
+        await async_session.close()
 
 
-async_session_factory = async_sessionmaker(async_engine)
-
-str256 = Annotated[str, 256]
+async_db_manager = AsyncDatabaseManager()
 
 
 class Base(DeclarativeBase):

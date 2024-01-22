@@ -8,7 +8,7 @@ from alembic import context
 
 from src.config import settings
 from src.database import Base
-from src.menu.models import DishORM, SubMenuORM, MenuORM
+from src.menu.models import MenuORM
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
