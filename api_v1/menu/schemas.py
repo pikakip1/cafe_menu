@@ -1,6 +1,7 @@
 import uuid
 
 from pydantic import BaseModel, ConfigDict
+from sqlalchemy import null
 
 
 class MenuORMBase(BaseModel):
@@ -10,6 +11,15 @@ class MenuORMBase(BaseModel):
 
 class MenuCreate(MenuORMBase):
     pass
+
+
+class MenuUpdate(MenuCreate):
+    pass
+
+
+class MenuPartUpdate(MenuCreate):
+    title: str | None = None
+    description: str | None = None
 
 
 class Menu(MenuORMBase):
