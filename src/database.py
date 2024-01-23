@@ -1,3 +1,4 @@
+import sqlalchemy
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, async_scoped_session
 from src.config import settings
 import uuid
