@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api_v1.menu.dependencies import get_menu
+from api_v1.sub_menu.dependencies import get_sub_menu
 from src.database import async_db_manager
 from api_v1.menu import crud
 from api_v1.menu.schemas import Menu, MenuCreate, MenuUpdate, MenuPartUpdate

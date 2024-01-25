@@ -1,9 +1,12 @@
 import uuid
+from typing import Type
 
 from sqlalchemy.engine import Result
 from sqlalchemy import select
 
+from api_v1.sub_menu.schemas import SubMenu
 from src.menu.models import MenuORM
+from src.sub_menu.models import SubMenuORM
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from api_v1.menu.schemas import Menu, MenuCreate, MenuUpdate, MenuPartUpdate
@@ -46,3 +49,5 @@ async def delete_menu(
 ) -> None:
     await session.delete(menu)
     await session.commit()
+
+

@@ -1,7 +1,6 @@
 import uuid
 
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import null
 
 
 class MenuORMBase(BaseModel):
