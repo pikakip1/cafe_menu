@@ -25,3 +25,4 @@ class SubMenuPartUpdate(SubMenuCreate):
 class SubMenu(SubMenuORMBase):
     model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID | str
+    dishes_count: int = 0
