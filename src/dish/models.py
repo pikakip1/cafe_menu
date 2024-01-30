@@ -1,10 +1,11 @@
 import uuid
+from decimal import Decimal
 
-from sqlalchemy import ForeignKey, Float
+from sqlalchemy import DECIMAL, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.database import Base
 import src.sub_menu.models
+from src.database import Base
 
 
 class DishORM(Base):
@@ -12,7 +13,7 @@ class DishORM(Base):
 
     title: Mapped[str]
     description: Mapped[str]
-    price: Mapped[float] = mapped_column(Float(decimal_return_scale=2))
+    price: Mapped[Decimal] = mapped_column(DECIMAL(decimal_return_scale=2))
     sub_menu_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("sub_menu.id", ondelete="CASCADE")
     )

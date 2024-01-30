@@ -1,13 +1,10 @@
-import uuid
-
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api_v1.menu.dependencies import get_menu
-from api_v1.sub_menu.dependencies import get_sub_menu
-from src.database import async_db_manager
 from api_v1.menu import crud
-from api_v1.menu.schemas import Menu, MenuCreate, MenuUpdate, MenuPartUpdate
+from api_v1.menu.dependencies import get_menu
+from api_v1.menu.schemas import Menu, MenuCreate, MenuPartUpdate, MenuUpdate
+from src.database import async_db_manager
 
 router = APIRouter(tags=["Menu"])
 
@@ -23,7 +20,10 @@ async def get_menu(menu: Menu = Depends(get_menu)):
 
 
 @router.post('/', response_model=Menu, status_code=status.HTTP_201_CREATED)
-async def create_menu(menu_data: MenuCreate, session: AsyncSession = Depends(async_db_manager.scoped_session_dependency)):
+async def create_menu(
+        menu_data: MenuCreate,
+        session: AsyncSession = Depends(async_db_manager.scoped_session_dependency)
+):
     return await crud.create_menu(session=session, menu_data=menu_data)
 
 
