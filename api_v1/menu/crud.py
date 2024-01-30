@@ -1,26 +1,41 @@
 import uuid
-from typing import Type
+from typing import Any
 
-from sqlalchemy.engine import Result
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-from api_v1.sub_menu.schemas import SubMenu
+from api_v1.menu.schemas import Menu, MenuCreate, MenuPartUpdate, MenuUpdate
 from src.menu.models import MenuORM
 from src.sub_menu.models import SubMenuORM
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from api_v1.menu.schemas import Menu, MenuCreate, MenuUpdate, MenuPartUpdate
-
 
 async def get_all_menus(session: AsyncSession) -> list[MenuORM]:
-    stmt = select(MenuORM)
-    result: Result = await session.execute(stmt)
+    stmt = select(MenuORM).options(selectinload(MenuORM.sub_menus).options(selectinload(SubMenuORM.dishes)))
+
+    result = await session.execute(stmt)
     menus = result.scalars().all()
-    return list(menus)
+    for menu in menus:
+        menu.submenus_count = len(menu.sub_menus)
+        menu.dishes_count = sum(len(submenu.dishes) for submenu in menu.sub_menus)
+    return menus
 
 
-async def get_menu(session: AsyncSession, menu_id: uuid.UUID) -> MenuORM | None:
-    return await session.get(MenuORM, menu_id)
+async def get_menu(session: AsyncSession, menu_id: uuid.UUID) -> list[Any] | MenuORM:
+    stmt = (
+        select(MenuORM).
+        filter(MenuORM.id == menu_id)
+        .options(
+            selectinload(MenuORM.sub_menus).options(selectinload(SubMenuORM.dishes))
+        )
+    )
+    result = await session.execute(stmt)
+    menu = result.scalars().one_or_none()
+    if not menu:
+        return []
+    menu.submenus_count = len(menu.sub_menus)
+    menu.dishes_count = sum(len(submenu.dishes) for submenu in menu.sub_menus)
+    return menu
 
 
 async def create_menu(session: AsyncSession, menu_data: MenuCreate) -> MenuORM:
@@ -49,5 +64,3 @@ async def delete_menu(
 ) -> None:
     await session.delete(menu)
     await session.commit()
-
-
