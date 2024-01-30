@@ -3,9 +3,9 @@ import uuid
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.database import Base
 import src.dish.models
 import src.menu.models
+from src.database import Base
 
 
 class SubMenuORM(Base):
@@ -20,5 +20,6 @@ class SubMenuORM(Base):
     )
 
     dishes: Mapped[list["DishORM"]] = relationship(
-        back_populates='sub_menu'
+        back_populates='sub_menu',
+        cascade='all, delete-orphan'
     )
