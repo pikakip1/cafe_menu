@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -6,7 +7,7 @@ from pydantic import BaseModel, ConfigDict
 class DishBase(BaseModel):
     title: str
     description: str
-    price: float
+    price: Decimal
 
 
 class DishCreate(DishBase):
@@ -21,7 +22,7 @@ class DishPartUpdate(DishUpdate):
     title: str | None = None
     description: str | None = None
     menu_id: uuid.UUID | None = None
-    price: float | None = None
+    price: Decimal | None = None
 
 
 class Dish(DishBase):
