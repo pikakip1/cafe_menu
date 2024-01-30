@@ -1,12 +1,15 @@
-import sqlalchemy
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, async_scoped_session
-from src.config import settings
 import uuid
-from datetime import datetime
 from asyncio import current_task
+from datetime import datetime
+
+import sqlalchemy
 import sqlalchemy as sa
 import sqlalchemy.orm as so
+from sqlalchemy.ext.asyncio import (async_scoped_session, async_sessionmaker,
+                                    create_async_engine)
 from sqlalchemy.orm import DeclarativeBase
+
+from src.config import settings
 
 
 class AsyncDatabaseManager:
