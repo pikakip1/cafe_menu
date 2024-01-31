@@ -68,7 +68,7 @@ async def delete_dish(
         submenu_id: uuid.UUID,
         dish_id: uuid.UUID,
         session: AsyncSession = Depends(async_db_manager.scoped_session_dependency)
-) -> dict:
+) -> None:
     return await crud.delete_dish(
         session=session,
         menu_id=menu_id,

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api_v1.menu import crud
-from api_v1.menu.dependencies import get_menu
+from api_v1.dependencies import get_menu
 from api_v1.menu.schemas import Menu, MenuCreate, MenuPartUpdate, MenuUpdate
 from src.database import async_db_manager
 
@@ -29,14 +29,14 @@ async def create_menu(
 
 @router.put('/', response_model=Menu)
 async def update_menu(
-        menu_update: MenuUpdate,
+        menu_update: MenuPartUpdate,
         menu: Menu = Depends(get_menu),
         session: AsyncSession = Depends(async_db_manager.scoped_session_dependency)
 ):
     return await crud.update_menu(
         session=session,
         menu=menu,
-        menu_update=menu_update
+        update_values=menu_update
     )
 
 
@@ -49,8 +49,7 @@ async def put_update_menu(
     return await crud.update_menu(
         session=session,
         menu=menu,
-        menu_update=menu_update,
-        part_update=True
+        update_values=menu_update,
     )
 
 
