@@ -7,6 +7,7 @@ from sqlalchemy.orm import selectinload
 from starlette import status
 
 from api_v1.dependencies import get_sub_menu_by_menu_id
+from api_v1.base_crud import DishBaseCRUD
 from api_v1.dish.schemas import DishCreate, DishPartUpdate
 from src.dish.models import DishORM
 from src.sub_menu.models import SubMenuORM
@@ -59,11 +60,12 @@ async def create_dish(
         session: AsyncSession
 ) -> DishORM:
     sub_menu = await get_sub_menu_by_menu_id(session=session, related_menu_id=menu_id,  sub_menu_id=submenu_id)
-    new_dish = DishORM(**new_dish_data.model_dump())
-    new_dish.sub_menu_id = sub_menu.id
-    session.add(new_dish)
-    await session.commit()
-    return new_dish
+    data = new_dish_data.model_dump()
+    data.update(sub_menu_id=sub_menu.id)
+    return await DishBaseCRUD.create(
+        session=session,
+        upload_data=data
+    )
 
 
 async def update_dish(
@@ -74,11 +76,11 @@ async def update_dish(
         session: AsyncSession
 ) -> DishORM:
     dish = await get_dish(session=session, menu_id=menu_id, submenu_id=sub_menu_id, dish_id=dish_id)
-    for name, value in update_data.model_dump(exclude_unset=True).items():
-        setattr(dish, name, value)
-    await session.commit()
-    await session.refresh(dish)
-    return dish
+    return await DishBaseCRUD.update(
+        session=session,
+        update_values=update_data.model_dump(exclude_unset=True),
+        obj_update=dish
+    )
 
 
 async def delete_dish(
@@ -86,9 +88,9 @@ async def delete_dish(
         sub_menu_id: uuid.UUID,
         dish_id: uuid.UUID,
         session: AsyncSession
-) -> dict:
+) -> None:
     dish = await get_dish(session=session, menu_id=menu_id, submenu_id=sub_menu_id, dish_id=dish_id)
-    dish_title = dish.title
-    await session.delete(dish)
-    await session.commit()
-    return {'Блюдо удалено': dish_title}
+    await DishBaseCRUD.delete(
+        session=session,
+        obj_delete=dish
+    )
